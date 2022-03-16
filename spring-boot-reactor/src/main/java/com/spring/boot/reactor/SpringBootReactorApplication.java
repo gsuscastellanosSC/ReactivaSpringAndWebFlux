@@ -22,20 +22,21 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		String[] name = { "Sc", "Jesús", "Almircar", "1", "qwerty" };
+		String[] name = { "Sc Castellanos", "Jesús Castellanos", "Almircar Castellanos", "1 Castellanos",
+				"qwerty Castellanos", "jESUS Castellanos", "Sc Qwerty", "Jesus Castellanos" };
 
-		Flux<User> names = Flux.just(name).map(nombre -> {
-			return nombre.toLowerCase();
-		}).map(nombre -> new User(nombre.toUpperCase(), null)).doOnNext(user -> {
-			if (user == null) {
-				throw new RuntimeException("Name is emty");
-			}
-			System.out.println(user.getName());
-		}).map(usuario -> {
-			String nombre = usuario.getName();
-			usuario.setName(nombre.toLowerCase());
-			return usuario;
-		});
+		Flux<User> names = Flux.just(name)
+				.map(nombre -> new User(nombre.split(" ")[0].toUpperCase(), nombre.split(" ")[1].toUpperCase()))
+				.filter(usuario -> usuario.getName().toLowerCase().equals("sc")).doOnNext(user -> {
+					if (user == null) {
+						throw new RuntimeException("Name is emty");
+					}
+					System.out.println(user.getName().concat(" ").concat(user.getLastName()));
+				}).map(usuario -> {
+					String nombre = usuario.getName();
+					usuario.setName(nombre.toLowerCase());
+					return usuario;
+				});
 
 		names.subscribe(element -> log.info(element.toString()), error -> log.error(error.getMessage()),
 				new Runnable() {
